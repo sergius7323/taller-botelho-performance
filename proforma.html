@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Proforma</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+body{font-family:Arial;padding:40px}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #000;padding:6px}
+h2{text-align:center}
+</style>
+</head>
+
+<body>
+
+<div id="proforma">
+<h2>PROFORMA</h2>
+
+<p><b>Cliente:</b> <span id="cliente"></span></p>
+<p><b>Marca:</b> <span id="marca"></span></p>
+<p><b>Modelo:</b> <span id="modelo"></span></p>
+<p><b>Total:</b> Bs <span id="total"></span></p>
+</div>
+
+<button onclick="generarPDF()">📄 Descargar PDF</button>
+
+<script>
+const API_KEY="TU_API_KEY";
+const BASE_ID="TU_BASE_ID";
+const TABLE="PROFORMAS";
+
+const params=new URLSearchParams(window.location.search);
+const id=params.get("id");
+
+async function cargar(){
+const url=`https://api.airtable.com/v0/${BASE_ID}/${TABLE}/${id}`;
+
+const res=await fetch(url,{
+headers:{
+Authorization:`Bearer ${API_KEY}`
+}
+});
+
+const data=await res.json();
+
+document.getElementById("cliente").innerText=data.fields.Cliente;
+document.getElementById("marca").innerText=data.fields.Marca;
+document.getElementById("modelo").innerText=data.fields.Modelo;
+document.getElementById("total").innerText=data.fields["TOTAL CON IVA"];
+}
+
+function generarPDF(){
+html2pdf().from(document.getElementById("proforma"))
+.save("proforma.pdf");
+}
+
+cargar();
+</script>
+
+</body>
+</html>
